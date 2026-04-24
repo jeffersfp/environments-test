@@ -1,0 +1,31 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: echo "Building..."
+
+  # This job gates everything behind manual approval
+  approval-gate:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: prod        # <-- triggers the approval requirement
+    steps:
+      - name: Approval granted
+        run: echo "Approved — proceeding with deploy"
+
+  deploy:
+    needs: approval-gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy
+        run: echo "Deploying..."
